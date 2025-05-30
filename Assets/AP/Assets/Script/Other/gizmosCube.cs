@@ -19,8 +19,6 @@ public class gizmosCube : MonoBehaviour {
 		Gizmos.matrix = cubeTransform;
 
 		F_MeshType ();
-
-
 	}
 
 
