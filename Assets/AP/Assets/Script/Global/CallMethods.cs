@@ -163,10 +163,10 @@ public class CallMethods {
 		for (var i = 0; i < methodsList.Count; i++) {
 			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
 				//Debug.Log(methodsList [i].obj.name);
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData").ReturnType;
+				MethodInfo mInfo = methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData");
 
-				if(info == typeof(System.String)){
-					result = (string)methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData").Invoke (
+				if(mInfo != null && mInfo.ReturnType == typeof(System.String)){
+					result = (string)mInfo.Invoke (
 						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ });	
 				}
 			}
@@ -178,11 +178,12 @@ public class CallMethods {
 	public void Call_A_Method_ObjectLoadData (List<EditorMethodsList.MethodsList> methodsList,string s_Value){
 		for (var i = 0; i < methodsList.Count; i++) {
 
-			if (methodsList [i].obj != null) {
+			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
 
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject").ReturnType;
+				MethodInfo mInfo = methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject");
 																								
-				methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject").Invoke (
+				if(mInfo != null)
+					mInfo.Invoke (
 						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ s_Value });	// call method with an string argument
                 
 			} 
@@ -195,12 +196,13 @@ public class CallMethods {
         for (var i = 0; i < methodsList.Count; i++)
         {
 
-            if (methodsList[i].obj != null)
+            if (methodsList[i].obj != null && methodsList[i].scriptRef != null)
             {
 
-                Type info = methodsList[i].scriptRef.GetType().GetMethod("F_ResetPuzzle").ReturnType;
+                MethodInfo mInfo = methodsList[i].scriptRef.GetType().GetMethod("F_ResetPuzzle");
 
-                methodsList[i].scriptRef.GetType().GetMethod("F_ResetPuzzle").Invoke(
+                if (mInfo != null)
+                    mInfo.Invoke(
                         methodsList[i].obj.GetComponent(methodsList[i].scriptRef.GetType()), new object[] {}); // call method with an string argument
 
             }
@@ -213,12 +215,13 @@ public class CallMethods {
         for (var i = 0; i < methodsList.Count; i++)
         {
 
-            if (methodsList[i].obj != null)
+            if (methodsList[i].obj != null && methodsList[i].scriptRef != null)
             {
 
-                Type info = methodsList[i].scriptRef.GetType().GetMethod(methodsList[i].methodInfoName).ReturnType;
+                MethodInfo mInfo = methodsList[i].scriptRef.GetType().GetMethod(methodsList[i].methodInfoName);
 
-                methodsList[i].scriptRef.GetType().GetMethod(methodsList[i].methodInfoName).Invoke(
+                if (mInfo != null)
+                    mInfo.Invoke(
                     methodsList[i].obj.GetComponent(methodsList[i].scriptRef.GetType()), new object[] { s_Value}); // call method with an string argument
 
             }
