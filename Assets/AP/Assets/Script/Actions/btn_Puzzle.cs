@@ -14,8 +14,16 @@ public class btn_Puzzle : MonoBehaviour {
 	
     public void focusPuzzle(){
         //Debug.Log("puzzle");
-        if(!ingameGlobalManager.instance.b_focusModeIsActivated)        // Focus not activated
-            currentPuzzle.GetComponent<conditionsToAccessThePuzzle>().F_ActivateFocus(currentPuzzle);
+        if(!ingameGlobalManager.instance.b_focusModeIsActivated){        // Focus not activated
+            if (currentPuzzle.GetComponent<InteractableZone>()) 
+            {
+                currentPuzzle.GetComponent<InteractableZone>().ShowFeedback();
+                return;
+            }
+
+            if (currentPuzzle.GetComponent<conditionsToAccessThePuzzle>())
+                currentPuzzle.GetComponent<conditionsToAccessThePuzzle>().F_ActivateFocus(currentPuzzle);
+        }
       
 
     }
