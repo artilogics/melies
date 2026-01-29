@@ -20,6 +20,8 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
     SerializedProperty          a_puzzleSolvedVolume;
 
     SerializedProperty          objectActivatedWhenPuzzleIsSolved;
+    SerializedProperty          b_playCinematic;
+    SerializedProperty          cinematicVideo;
 
 
     public EditorMethods        editorMethods;                                         // access the component EditorMethods
@@ -56,6 +58,8 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
         a_puzzleSolvedVolume = serializedObject.FindProperty("a_puzzleSolvedVolume");
 
         objectActivatedWhenPuzzleIsSolved = serializedObject.FindProperty("objectActivatedWhenPuzzleIsSolved");
+        b_playCinematic = serializedObject.FindProperty("b_playCinematic");
+        cinematicVideo = serializedObject.FindProperty("cinematicVideo");
 
 
         if (EditorPrefs.GetBool("AP_ProSkin") == true)
@@ -125,6 +129,24 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
             GUILayout.Label("Volume : ", GUILayout.Width(60));
             a_puzzleSolvedVolume.floatValue = EditorGUILayout.Slider(a_puzzleSolvedVolume.floatValue, 0, 1);
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.LabelField("");
+
+            EditorGUILayout.BeginVertical(style_Yellow_01);
+            EditorGUILayout.LabelField("Cinematic Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Play Cinematic on Solve: ", GUILayout.Width(180));
+            EditorGUILayout.PropertyField(b_playCinematic, new GUIContent(""), GUILayout.Width(30));
+            EditorGUILayout.EndHorizontal();
+
+            if (b_playCinematic.boolValue)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("Cinematic Video Clip: ", GUILayout.Width(180));
+                EditorGUILayout.PropertyField(cinematicVideo, new GUIContent(""), GUILayout.Width(150));
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndVertical();
 
             EditorGUILayout.LabelField("");
 

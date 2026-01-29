@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class actionsWhenPuzzleIsSolved : MonoBehaviour {
     public bool                     SeeInspector = false;
@@ -43,6 +44,9 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
     private AudioSource             a_Source;
 
     public GameObject               objectActivatedWhenPuzzleIsSolved;                              // If the gameobject is activated, the puzzle is solved
+
+    public bool                     b_playCinematic = false;
+    public VideoClip                cinematicVideo;
 
 
 	private void Start()
@@ -179,6 +183,50 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
 
         ingameGlobalManager.instance._backInputs.ExitFocusMode();
 
+        if (b_playCinematic && cinematicVideo != null)
+        {
+            // Create a temporary object for the VideoPlayer
+            GameObject vidObj = new GameObject("CinematicVideoPlayer");
+            VideoPlayer vPlayer = vidObj.AddComponent<VideoPlayer>();
+
+            vPlayer.playOnAwake = false;
+            vPlayer.renderMode = VideoRenderMode.CameraNearPlane;
+            vPlayer.targetCamera = playerCamera.GetComponent<Camera>();
+            vPlayer.clip = cinematicVideo;
+            vPlayer.isLooping = false;
+
+            // Prepare and wait
+            vPlayer.Prepare();
+            yield return new WaitUntil(() => vPlayer.isPrepared);
+
+            // Hide UI
+            if (ingameGlobalManager.instance.canvasPlayerInfos)
+                ingameGlobalManager.instance.canvasPlayerInfos.gameObject.SetActive(false);
+            if (ingameGlobalManager.instance.canvasMainMenu)
+                ingameGlobalManager.instance.canvasMainMenu.gameObject.SetActive(false);
+
+            vPlayer.Play();
+
+            // Wait until it starts playing (clip length might be 0 until it starts)
+            yield return new WaitForSeconds(0.1f);
+
+            float timer = 0;
+            while (vPlayer.isPlaying && timer < (float)vPlayer.clip.length + 1f)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            // End game and return to main menu
+            if (ingameGlobalManager.instance.saveAndLoadManager)
+            {
+                ingameGlobalManager.instance.saveAndLoadManager.F_Load_MainMenu_Scene(0);
+            }
+            else
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+            }
+        }
     }
 
 
