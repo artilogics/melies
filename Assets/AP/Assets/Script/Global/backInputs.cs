@@ -70,7 +70,7 @@ public class backInputs : MonoBehaviour {
 	public void SceneExceptMainMenu(){
 		if (ingameGlobalManager.instance.b_DesktopInputs
 			&& ingameGlobalManager.instance.saveAndLoadManager.b_IngameDataHasBeenLoaded) {				// Game datas and parameters are loaded
-			if (Input.GetKeyDown (KeyCode.Mouse1) 																				// Mouse right Click
+			if (Input.GetKeyDown (KeyCode.Mouse1) || Input.GetKeyDown (KeyCode.S) 																				// Mouse right Click
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 			// Keyboard Back Button	 : Default Escape
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop]) 			// Keyboard Pause Button : Default P
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringGamepadButton[backButtonJoystick])) {		// Joystick back button
@@ -127,7 +127,7 @@ public class backInputs : MonoBehaviour {
 							}
 						}
 					}
-					else if (Input.GetKeyDown (KeyCode.Mouse1)) {																	// Mouse Right Click					
+					else if (Input.GetKeyDown (KeyCode.Mouse1) || Input.GetKeyDown (KeyCode.S)) {																	// Mouse Right Click					
 						if (SceneManager.GetActiveScene ().buildIndex != 0) {								// Game Scenes
 							if (gManager.navigationList.Count > 0
 								&& gManager.navigationList [gManager.navigationList.Count - 1] == "MainMenuManager") {

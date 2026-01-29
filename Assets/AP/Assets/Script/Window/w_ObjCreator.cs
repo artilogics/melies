@@ -1199,6 +1199,7 @@ public class w_ObjCreator : EditorWindow
         {
             if (GUILayout.Button("Trigger : Play a Voice")) {  currentItemDisplay = (Texture2D)listOfTexture2DActionTrigger.GetArrayElementAtIndex(3).objectReferenceValue;intcurrentItemDisplay = 3; }
             if (GUILayout.Button("Trigger : Custom method")) { currentItemDisplay = (Texture2D)listOfTexture2DActionTrigger.GetArrayElementAtIndex(4).objectReferenceValue;intcurrentItemDisplay = 4; }
+            if (GUILayout.Button("Interest Zone")) { currentItemDisplay = null; intcurrentItemDisplay = 7; }
         }
 
 
@@ -1216,11 +1217,37 @@ public class w_ObjCreator : EditorWindow
 
         if (GUILayout.Button("Create"))
         {
-            GameObject tmpObj = Instantiate((GameObject)listOfObjsActionTrigger.GetArrayElementAtIndex(intcurrentItemDisplay).objectReferenceValue);
-            Undo.RegisterCreatedObjectUndo(tmpObj, tmpObj.name);
-            Selection.activeGameObject = tmpObj;
+            GameObject tmpObj = null;
 
-            F_AutoSetupTriggerPlayVoice(0);
+            if (intcurrentItemDisplay == 7)
+            {
+                tmpObj = new GameObject("Interest_Zone");
+                Undo.RegisterCreatedObjectUndo(tmpObj, tmpObj.name);
+                if(tmpObj.GetComponent<BoxCollider>())
+                    tmpObj.GetComponent<BoxCollider>().isTrigger = true;
+                else
+                {
+                    BoxCollider box = tmpObj.AddComponent<BoxCollider>();
+                    box.isTrigger = true;
+                }
+                
+                tmpObj.tag = "PuzzleIcon";
+                
+                if(!tmpObj.GetComponent<InteractableZone>())
+                     tmpObj.AddComponent<InteractableZone>();
+
+                if (!tmpObj.GetComponent<TextProperties>())
+                    tmpObj.AddComponent<TextProperties>();
+
+                 Selection.activeGameObject = tmpObj;
+            }
+            else
+            {
+                tmpObj = Instantiate((GameObject)listOfObjsActionTrigger.GetArrayElementAtIndex(intcurrentItemDisplay).objectReferenceValue);
+                Undo.RegisterCreatedObjectUndo(tmpObj, tmpObj.name);
+                Selection.activeGameObject = tmpObj;
+                F_AutoSetupTriggerPlayVoice(0);
+            }
         }
     }
 

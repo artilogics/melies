@@ -129,7 +129,13 @@ public class UIVariousFunctions : MonoBehaviour {
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [2])) {		// Type : Info
 		}
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [3])) {		// Type : puzzle
-            tmpBtn.GetComponent<btn_Puzzle>().currentPuzzle = obj.transform.parent.gameObject;
+            if (obj.GetComponent<InteractableZone>()){
+                tmpBtn.GetComponent<btn_Puzzle>().currentPuzzle = obj;
+                if(obj.GetComponent<InteractableZone>().UI_Icon != null)
+                    tmpBtn.GetComponent<Image>().sprite = obj.GetComponent<InteractableZone>().UI_Icon;
+            }
+            else if (obj.transform.parent)
+			    tmpBtn.GetComponent<btn_Puzzle>().currentPuzzle = obj.transform.parent.gameObject;
 		}
         if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList[5]))         // Type : focus Only
         {       
