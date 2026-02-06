@@ -441,93 +441,81 @@ public class LogicsPuzzle : MonoBehaviour {
 
   
   
-    private void CheckIfPuzzleSolved(){
+    private void CheckIfPuzzleSolved()
+    {
         bool result = true;
 
-        for (var i = 0; i < pivotLogicList.Count; i++)
+        // 1. Reset tracking states
+        for (int k = 0; k < inGameLogicsPositionList.Count; k++) inGameLogicsPositionList[k] = -1;
+        for (int k = 0; k < inGameAxis.Count; k++) inGameAxis[k] = false;
+
+        // 2. Iterate through all items (Logics) to check where they are placed
+        for (var j = 0; j < pLogicList.Count; j++)
         {
-            for (var j = 0; j < pLogicList.Count; j++)
+            GameObject logicObj = LogicList[j].transform.GetChild(0).gameObject;
+            
+            // NEW: If this specific object is CURRENTLY being dragged, we don't snap it.
+            // This allows smooth movement without the piece "fighting" the mouse.
+            if(dragAndDrop.returnCurrentSelectedObject() == logicObj)
+                continue;
+
+            for (var i = 0; i < pivotLogicList.Count; i++)
             {
-                // Check if Logic is already place on Axis
-                if (LogicList[j].transform.GetChild(0).transform.position == pivotLogicList[i].transform.position)
+                // Check if the item is close enough to an axis (pivot)
+                float distance = Vector3.Distance(logicObj.transform.position, pivotLogicList[i].transform.position);
+                
+                // REDUCED DISTANCE: Changed from 0.15f to 0.05f for more precision as requested.
+                if (distance < 0.05f) 
                 {
-                    if (pLogicList[j].i_AxisType == AxisTypeList[i] &&
-                        inGameLogicsPositionList[i] != j)    // Check if Logic already on this axis. New Logic on Axis position. Move Old Logic on Init position
+                    // PERMISSIVE SNAP: The object snaps to this slot regardless of ID
+                    logicObj.transform.position = pivotLogicList[i].transform.position;
+                    logicObj.transform.eulerAngles = pivotLogicList[i].transform.eulerAngles;
+
+                    // STRICT VALIDATION: Only mark as correct if IDs match
+                    bool typesMatch = (pLogicList[j].i_AxisType == AxisTypeList[i] && pLogicList[j].i_LogicType == LogicsTypeList[i]);
+                    
+                    if (typesMatch)
                     {
-                        if(inGameLogicsPositionList[i]!= -1){
-                            LogicList[inGameLogicsPositionList[i]].transform.GetChild(0).transform.localPosition = Vector3.zero;
-                            LogicList[inGameLogicsPositionList[i]].transform.GetChild(0).transform.localEulerAngles = Vector3.zero;
+                        // Check if axis is already occupied to avoid duplicate counting
+                        if (inGameLogicsPositionList[i] == -1)
+                        {
                             inGameLogicsPositionList[i] = j;
-                            //Debug.Log("Here 0a");
-                            break;
+                            inGameAxis[i] = true;
                         }
                     }
-                }
-            }
-            inGameLogicsPositionList[i] = -1;                // No Logic on this axis
-        }
-
-        for (var i = 0; i < pivotLogicList.Count; i++)
-        {
-            for (var j = 0; j < pLogicList.Count; j++)
-            {
-                // Check if the pipe Axis is compatible with the Logic
-                if (LogicList[j].transform.GetChild(0).transform.position == pivotLogicList[i].transform.position)
-                {
-                    if (pLogicList[j].i_AxisType != AxisTypeList[i]){                                // Not compatible
-                        LogicList[j].transform.GetChild(0).transform.localPosition = Vector3.zero;
-                       // Debug.Log("Here 1a");
-                    }
-
-                    if (pLogicList[j].i_AxisType == AxisTypeList[i])                                 // Compatible
+                    else
                     {
-                        inGameLogicsPositionList[i] = j;
-                        LogicList[j].transform.GetChild(0).transform.eulerAngles = pivotLogicList[i].transform.eulerAngles;
-                        //Debug.Log("Here 2a");
+                        // Incorrect placement: We let it stay snapped (permissive), but don't mark as solved
+                        inGameLogicsPositionList[i] = j; 
+                        inGameAxis[i] = false; 
                     }
+                    break;
                 }
             }
         }
 
-
-        // Check if the Logic is the needed Logic on a specific axis
+        // 3. Victory check: All mandatory slots ("Use") must be correctly filled
         for (var i = 0; i < pivotLogicList.Count; i++)
         {
-            inGameAxis[i] = false;
-            for (var j = 0; j < pLogicList.Count; j++)
+            // If the slot is NOT a Fake (it is a "Use"), it must be solved
+            if (!LogicsUseOrFakeList[i])
             {
-                if (LogicList[j].transform.GetChild(0).transform.position == pivotLogicList[i].transform.position)
+                if (!inGameAxis[i])
                 {
-                  
-                    if (pLogicList[j].i_AxisType == AxisTypeList[i] &&
-                        pLogicList[j].i_LogicType == LogicsTypeList[i]) 
-                    {
-                        inGameAxis[i] = true;
-                        break;
-                    }
+                    result = false;
+                    break;
                 }
             }
         }
 
-
-
-
-        // Check if all axis + Logic are well associated
-        for (var i = 0; i < pivotLogicList.Count; i++)
+        // 4. Resolve if all conditions are met
+        if (result)
         {
-            if(!inGameAxis[i] && !LogicsUseOrFakeList[i]){
-                result = false;
-                break;
-            }
-        }
-
-
-        if(result){
             puzzleSolved();
         }
 
-        if (ingameGlobalManager.instance._P)        // Debug Mode
-            puzzleSolved();
+        /*if (ingameGlobalManager.instance._P)        // Debug Mode
+            puzzleSolved();*/
     }
 
     public void InitListOfHandsInDragAndDropScript()
