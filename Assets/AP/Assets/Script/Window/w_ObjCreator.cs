@@ -1087,25 +1087,28 @@ public class w_ObjCreator : EditorWindow
                     meshObj.transform.localPosition = new Vector3(0, 0, 1f); 
                 }
 
-                // CLEAN Mesh: Remove all asset scripts
-                foreach (var comp in meshObj.GetComponentsInChildren<MonoBehaviour>())
+                // CLEAN Mesh: Remove all asset scripts and COLLIDERS so it's just a visual mesh
+                foreach (var comp in meshObj.GetComponentsInChildren<Component>())
                 {
-                    if (comp != null && !(comp is Renderer) && !(comp is MeshFilter)) DestroyImmediate(comp);
+                    if (comp != null && !(comp is Transform) && !(comp is Renderer) && !(comp is MeshFilter)) 
+                    {
+                        DestroyImmediate(comp);
+                    }
                 }
                 if (meshObj.GetComponent<Rigidbody>()) DestroyImmediate(meshObj.GetComponent<Rigidbody>());
-                if (meshObj.GetComponent<HingeJoint>()) DestroyImmediate(meshObj.GetComponent<HingeJoint>());
+                // if (meshObj.GetComponent<HingeJoint>()) DestroyImmediate(meshObj.GetComponent<HingeJoint>()); // Original line, removed as covered by general component removal
 
-                // 5. Setup Interaction/Animation on HingeRoot
+                // 4. Setup Interaction/Animation on HingeRoot
                 TextProperties tp = tmpObj.AddComponent<TextProperties>();
                 tp.managerID = 4; // Asset ID for "Action" icons
                 tp.b_UIButtonShowTitle = false;
 
                 AP_SimpleTrapdoor simpleTrapdoor = tmpObj.AddComponent<AP_SimpleTrapdoor>();
                 simpleTrapdoor.closedRotation = Vector3.zero;
-                simpleTrapdoor.openedRotation = new Vector3(-120, 0, 0); // Open wider for drama
+                simpleTrapdoor.openedRotation = new Vector3(-90, 0, 0); // Opens upwards // Original was -120, 0, 0
                 simpleTrapdoor.speed = 2f;
 
-                // 6. Add BoxCollider to HingeRoot (Should cover the whole door mesh)
+                // 5. Add BoxCollider to HingeRoot (Solely responsible for detection/collision)
                 BoxCollider bc = tmpObj.AddComponent<BoxCollider>();
                 if (mr != null)
                 {
@@ -1120,7 +1123,7 @@ public class w_ObjCreator : EditorWindow
                 }
                 bc.isTrigger = false; 
                 
-                Debug.Log("Trapdoor Fixed: Pivot precisely at edge using localBounds. Mesh flat.");
+                Debug.Log("Trapdoor Setup Cleaned: Redundant components and mesh colliders removed.");
             }
             else
             {

@@ -68,6 +68,7 @@ public class AP_SimpleTrapdoor : MonoBehaviour
         while (t < 1f)
         {
             t += Time.deltaTime * speed;
+            // Use Slerp for smooth rotation
             transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, t);
             yield return null;
         }
