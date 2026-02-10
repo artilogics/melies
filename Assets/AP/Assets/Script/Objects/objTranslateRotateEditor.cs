@@ -793,9 +793,18 @@ public class objTranslateRotateEditor : Editor {
 
 				constraintsAxisRotation.GetArrayElementAtIndex (0).boolValue = true;
 				constraintsAxisRotation.GetArrayElementAtIndex (1).boolValue = true;
-				constraintsAxisRotation.GetArrayElementAtIndex (2).boolValue = true;
 			}
 		}
+
+        // Sync HingeJoint axis in Editor
+        objTranslateRotate myScript = (objTranslateRotate)target;
+        if (myScript.objPivot != null && myScript.objPivot.GetComponent<HingeJoint>())
+        {
+            HingeJoint hinge = myScript.objPivot.GetComponent<HingeJoint>();
+            if (movementAxis.intValue == 0) hinge.axis = new Vector3(1, 0, 0);
+            if (movementAxis.intValue == 1) hinge.axis = new Vector3(0, 1, 0);
+            if (movementAxis.intValue == 2) hinge.axis = new Vector3(0, 0, 1);
+        }
 	}
 
 //--> init object position when the movement is ended

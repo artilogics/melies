@@ -176,14 +176,13 @@ public class ItemDecector : MonoBehaviour {
 		}
 
         GameObject tmpObj = other.gameObject;
-        while (!tmpObj.GetComponent<objTranslateRotate>())          // Find the parent with the script objTranslateRotate attached to it
-        { tmpObj = tmpObj.transform.parent.gameObject; }
+        while (tmpObj != null && !tmpObj.GetComponent<objTranslateRotate>() && !tmpObj.GetComponent<AP_SimpleTrapdoor>())          // Find the parent with the script attached to it
+        {
+            if (tmpObj.transform.parent == null) { tmpObj = null; break; }
+            tmpObj = tmpObj.transform.parent.gameObject;
+        }
 
-       
-			
-        if (tmpObj.transform
-            && tmpObj.transform.GetComponent<objTranslateRotate> () 
-			&& !b_Exist) {
+        if (tmpObj != null && (tmpObj.GetComponent<objTranslateRotate>() || tmpObj.GetComponent<AP_SimpleTrapdoor>()) && !b_Exist) {
             //Debug.Log(tmpObj.name);
 			if (!ingameGlobalManager.instance.b_focusModeIsActivated) {
 				
