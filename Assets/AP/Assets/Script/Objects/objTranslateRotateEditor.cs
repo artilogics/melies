@@ -439,15 +439,13 @@ public class objTranslateRotateEditor : Editor {
 			EditorGUILayout.EndHorizontal ();
 
 	//-> Select Axis
-			if (movementType.intValue == 1){
-				EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("Select Axis : ", GUILayout.Width (120));
-					movementAxis.intValue = EditorGUILayout.Popup (movementAxis.intValue, optionsAxis);
-				EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("Select Axis : ", GUILayout.Width (120));
+				movementAxis.intValue = EditorGUILayout.Popup (movementAxis.intValue, optionsAxis);
+			EditorGUILayout.EndHorizontal ();
 
-				if (EditorGUI.EndChangeCheck ()) {
-					updateConstraints ();
-				}
+			if (EditorGUI.EndChangeCheck ()) {
+				updateConstraints ();
 			}
 			EditorGUILayout.LabelField ("");
 
