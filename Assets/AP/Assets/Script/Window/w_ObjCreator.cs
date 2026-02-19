@@ -1022,6 +1022,7 @@ public class w_ObjCreator : EditorWindow
             if (GUILayout.Button("1 Door Pivot Left")) { currentItemDisplay = (Texture2D)listOfTexture2DDoor.GetArrayElementAtIndex(0).objectReferenceValue; intcurrentItemDisplay = 0; }
             if (GUILayout.Button("1 Door Pivot Right")) { currentItemDisplay = (Texture2D)listOfTexture2DDoor.GetArrayElementAtIndex(1).objectReferenceValue; intcurrentItemDisplay = 1; }
             if (GUILayout.Button("2 Doors")) { currentItemDisplay = (Texture2D)listOfTexture2DDoor.GetArrayElementAtIndex(2).objectReferenceValue; intcurrentItemDisplay = 2; }
+            if (GUILayout.Button("Trapdoor")) { currentItemDisplay = (Texture2D)listOfTexture2DDoor.GetArrayElementAtIndex(0).objectReferenceValue; intcurrentItemDisplay = 5; }
         }
         //-> Translation
         else if (currentDoorSubType.intValue == 1)
@@ -1043,7 +1044,92 @@ public class w_ObjCreator : EditorWindow
 
         if (GUILayout.Button("Create"))
         {
-            GameObject tmpObj = Instantiate((GameObject)listOfObjsDoor.GetArrayElementAtIndex(intcurrentItemDisplay).objectReferenceValue);
+            GameObject tmpObj = null;
+
+            if (intcurrentItemDisplay == 5)
+            {
+                Vector3 instantiatePosition = Vector3.zero;
+                if (Selection.activeTransform != null)
+                    instantiatePosition = Selection.activeTransform.position;
+
+                // 1. Create the HINGE / ROOT (Rotation axis)
+                tmpObj = new GameObject("SimpleTrapdoor_HingeRoot");
+                tmpObj.transform.position = instantiatePosition;
+                tmpObj.transform.rotation = Quaternion.identity;
+                tmpObj.tag = "InteractObject";
+
+                // 2. Instantiate the MESH as child
+                GameObject meshPrefab = (GameObject)listOfObjsDoor.GetArrayElementAtIndex(0).objectReferenceValue;
+                GameObject meshObj = Instantiate(meshPrefab, tmpObj.transform);
+                meshObj.name = "DoorMesh";
+                
+                // 3. PRECISE PIVOT: Align the mesh's edge to the HingeRoot's origin (0,0,0)
+                MeshRenderer mr = meshObj.GetComponentInChildren<MeshRenderer>();
+                if (mr != null)
+                {
+                    // Most asset meshes are centered. mr.localBounds.min.y is the bottom edge of the door.
+                    // To put the bottom edge at 0, we move the mesh by -min.y on Y axis.
+                    float yOffsetToEdge = -mr.localBounds.min.y;
+                    
+                    // First move it so the edge is at 0
+                    meshObj.transform.localPosition = new Vector3(0, yOffsetToEdge, 0);
+                    
+                    // 4. FLATTEN: Rotate the mesh so it lies flat on the floor (rotate -90 on X)
+                    // This rotation rotates around the child's local origin, which is now the edge!
+                    // Wait, rotating the child -90X around its local 0,0,0 (now the edge)
+                    // The door which was extending from Y=0 to Y=Height now extends from Z=0 to Z=Height.
+                    meshObj.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+                }
+                else
+                {
+                    // Fallback if no renderer
+                    meshObj.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+                    meshObj.transform.localPosition = new Vector3(0, 0, 1f); 
+                }
+
+                // CLEAN Mesh: Remove all asset scripts and COLLIDERS so it's just a visual mesh
+                foreach (var comp in meshObj.GetComponentsInChildren<Component>())
+                {
+                    if (comp != null && !(comp is Transform) && !(comp is Renderer) && !(comp is MeshFilter)) 
+                    {
+                        DestroyImmediate(comp);
+                    }
+                }
+                if (meshObj.GetComponent<Rigidbody>()) DestroyImmediate(meshObj.GetComponent<Rigidbody>());
+                // if (meshObj.GetComponent<HingeJoint>()) DestroyImmediate(meshObj.GetComponent<HingeJoint>()); // Original line, removed as covered by general component removal
+
+                // 4. Setup Interaction/Animation on HingeRoot
+                TextProperties tp = tmpObj.AddComponent<TextProperties>();
+                tp.managerID = 4; // Asset ID for "Action" icons
+                tp.b_UIButtonShowTitle = false;
+
+                AP_SimpleTrapdoor simpleTrapdoor = tmpObj.AddComponent<AP_SimpleTrapdoor>();
+                simpleTrapdoor.closedRotation = Vector3.zero;
+                simpleTrapdoor.openedRotation = new Vector3(-90, 0, 0); // Opens upwards // Original was -120, 0, 0
+                simpleTrapdoor.speed = 2f;
+
+                // 5. Add BoxCollider to HingeRoot (Solely responsible for detection/collision)
+                BoxCollider bc = tmpObj.AddComponent<BoxCollider>();
+                if (mr != null)
+                {
+                    // In HingeRoot space, the door extends along Z axis from 0 to SizeY
+                    bc.center = new Vector3(0, 0.05f, mr.localBounds.size.y / 2f);
+                    bc.size = new Vector3(mr.localBounds.size.x, 0.1f, mr.localBounds.size.y);
+                }
+                else
+                {
+                    bc.center = new Vector3(0, 0, 1f);
+                    bc.size = new Vector3(1, 0.1f, 2);
+                }
+                bc.isTrigger = false; 
+                
+                Debug.Log("Trapdoor Setup Cleaned: Redundant components and mesh colliders removed.");
+            }
+            else
+            {
+                tmpObj = Instantiate((GameObject)listOfObjsDoor.GetArrayElementAtIndex(intcurrentItemDisplay).objectReferenceValue);
+            }
+
             Undo.RegisterCreatedObjectUndo(tmpObj, tmpObj.name);
             Selection.activeGameObject = tmpObj;
         }

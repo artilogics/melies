@@ -198,18 +198,35 @@ public class btn_Check : MonoBehaviour {
 		ingameGlobalManager.instance.GetComponent<mobileInputsFingerMovement> ().initDoubleTap();
 
         GameObject tmpObj = objRef;
-        while (!tmpObj.GetComponent<objTranslateRotate>())          // Find the parent with the script objTranslateRotate attached to it
-        {tmpObj = tmpObj.transform.parent.gameObject;}
-
-
-        if (tmpObj.transform.GetComponent<objTranslateRotate>())
+        while (tmpObj != null && !tmpObj.GetComponent<objTranslateRotate>() && !tmpObj.GetComponent<AP_SimpleTrapdoor>())          // Find the parent with the script attached to it
         {
-            if (tmpObj.transform.GetComponent<objTranslateRotate>().b_FocusMode_Desktop && ingameGlobalManager.instance.b_DesktopInputs
-                || tmpObj.transform.GetComponent<objTranslateRotate>().b_FocusMode_Mobile && !ingameGlobalManager.instance.b_DesktopInputs)
+            if (tmpObj.transform.parent == null) break;
+            tmpObj = tmpObj.transform.parent.gameObject;
+        }
+
+        if (tmpObj != null)
+        {
+            if (tmpObj.GetComponent<objTranslateRotate>())
             {
-                ingameGlobalManager.instance.currentobjTranslateRotate = tmpObj.transform.GetComponent<objTranslateRotate>();
+                if (tmpObj.GetComponent<objTranslateRotate>().b_FocusMode_Desktop && ingameGlobalManager.instance.b_DesktopInputs
+                    || tmpObj.GetComponent<objTranslateRotate>().b_FocusMode_Mobile && !ingameGlobalManager.instance.b_DesktopInputs)
+                {
+                    ingameGlobalManager.instance.currentobjTranslateRotate = tmpObj.GetComponent<objTranslateRotate>();
+                }
+                tmpObj.GetComponent<objTranslateRotate>().MoveObject();
             }
-            tmpObj.transform.GetComponent<objTranslateRotate>().MoveObject();
+            else
+            {
+                AP_SimpleTrapdoor simpleTrapdoor = tmpObj.GetComponent<AP_SimpleTrapdoor>();
+                // Fallback: search in children if not found on the hit object or parents
+                if (simpleTrapdoor == null) simpleTrapdoor = tmpObj.GetComponentInChildren<AP_SimpleTrapdoor>();
+
+                if (simpleTrapdoor != null)
+                {
+                    Debug.Log("btn_Check: Triggering AP_SimpleTrapdoor on " + simpleTrapdoor.gameObject.name);
+                    simpleTrapdoor.MoveObject();
+                }
+            }
         }
 	}
 		

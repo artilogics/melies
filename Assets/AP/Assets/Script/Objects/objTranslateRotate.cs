@@ -589,6 +589,9 @@ public class objTranslateRotate : MonoBehaviour {
         }
 
         //--> update modification
+        if (movementAxis == 0) hinge.axis = new Vector3(1, 0, 0);
+        if (movementAxis == 1) hinge.axis = new Vector3(0, 1, 0);
+        if (movementAxis == 2) hinge.axis = new Vector3(0, 0, 1);
         hinge.limits = limits;                             
 
     }
