@@ -1,4 +1,4 @@
-﻿// Description : conditionsToAccessThePuzzle : This script is use to check if the puzzle could be unlock or not
+// Description : conditionsToAccessThePuzzle : This script is use to check if the puzzle could be unlock or not
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,6 +41,7 @@ public class conditionsToAccessThePuzzle : MonoBehaviour {
     public List<idList>     feedbackIDList = new List<idList>() { new idList() };      // Lock Section : Check if an Object is in the player inventory using his ID
 
     public bool b_ActivateDoubleTapIcon = true;    // True : ACtivated the double tap UI icon if game is played on mobile platform
+    public GameObject       objectToHide;                       // Object hidden when puzzle is activated
 
 	private void Start()
 	{
@@ -86,6 +87,14 @@ public class conditionsToAccessThePuzzle : MonoBehaviour {
             }
         }
 	}
+
+    private void Update()
+    {
+        if (objectToHide && _actionsWhenPuzzleIsSolved && _actionsWhenPuzzleIsSolved.returnactionsWhenPuzzleIsSolved() && objectToHide.activeSelf)
+        {
+            objectToHide.SetActive(false);
+        }
+    }
 
 
 //--> Call from puzzle object to start puzzle initialization. Case : Start Focus Process because the puzzle is not inside a door or a drawer .
@@ -169,6 +178,9 @@ public class conditionsToAccessThePuzzle : MonoBehaviour {
         if (iconMobile_ExitPuzzle && !ingameGlobalManager.instance.b_DesktopInputs)
             iconMobile_ExitPuzzle.SetActive(false);
 
+        if (objectToHide && _actionsWhenPuzzleIsSolved != null && !_actionsWhenPuzzleIsSolved.returnactionsWhenPuzzleIsSolved()) 
+            objectToHide.SetActive(true);
+
         b_PuzzleIsActivated = false;
     }
 
@@ -191,6 +203,7 @@ public class conditionsToAccessThePuzzle : MonoBehaviour {
 
             DeactivateObjectInTheInvenetoryViewer();
             b_PuzzleIsActivated = true;
+            if (objectToHide) objectToHide.SetActive(false);
 
 
 

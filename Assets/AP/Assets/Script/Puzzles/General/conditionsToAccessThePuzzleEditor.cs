@@ -1,4 +1,4 @@
-﻿//Description : conditionsToAccessThePuzzleEditor : Custom Editor for conditionsToAccessThePuzzle.cs
+//Description : conditionsToAccessThePuzzleEditor : Custom Editor for conditionsToAccessThePuzzle.cs
 #if (UNITY_EDITOR)
 using UnityEngine;
 using System.Collections;
@@ -18,6 +18,7 @@ public class conditionsToAccessThePuzzleEditor : Editor {
     SerializedProperty          inventoryIDList;
     SerializedProperty          b_feedbackActivated;
     SerializedProperty          feedbackIDList;
+    SerializedProperty          objectToHide;
 
 
 
@@ -58,6 +59,7 @@ public class conditionsToAccessThePuzzleEditor : Editor {
         editorMethods = new EditorMethods();
         methodsList = serializedObject.FindProperty("methodsList");
         inventoryIDList = serializedObject.FindProperty("inventoryIDList");
+        objectToHide = serializedObject.FindProperty("objectToHide");
 
         if (EditorPrefs.GetBool("AP_ProSkin") == true)
         {
@@ -109,6 +111,13 @@ public class conditionsToAccessThePuzzleEditor : Editor {
 
             //-> Display feedback ID used when the puzzle is not available
             displayFeedbackWhenPuzzleIsLocked(style_Yellow_01);
+
+            //-> Option to hide an object when the puzzle is activated
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical(style_Purple);
+            EditorGUILayout.LabelField("Option: Hide object when puzzle is activated", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(objectToHide, new GUIContent("Object to hide"));
+            EditorGUILayout.EndVertical();
 
         }
 
