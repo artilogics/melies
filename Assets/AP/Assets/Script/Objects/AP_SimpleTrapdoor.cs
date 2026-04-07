@@ -11,6 +11,11 @@ public class AP_SimpleTrapdoor : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
     public float volume = 1f;
+    [Header("Item Requirement")]
+    public bool requiresItem = false;
+    public int requiredItemID = 0;
+    public int feedbackID = 0;
+    public bool deleteItemAfterUse = false;
 
     private AudioSource audioSource;
     private Coroutine movementCoroutine;
@@ -43,6 +48,32 @@ public class AP_SimpleTrapdoor : MonoBehaviour
 
     public void MoveObject()
     {
+        if (requiresItem && !isOpened)
+        {
+            ingameGlobalManager gManager = ingameGlobalManager.instance;
+            int itemIndex = gManager.currentPlayerInventoryList.IndexOf(requiredItemID);
+
+            if (itemIndex == -1)
+            {
+                // Display feedback if item is missing
+                if (gManager.canvasPlayerInfos._infoUI)
+                {
+                    gManager.canvasPlayerInfos._infoUI.playAnimInfo(
+                        gManager.currentFeedback.diaryList[gManager.currentLanguage]._languageSlot[feedbackID].diaryTitle[0], 
+                        "Feedback", 
+                        gameObject);
+                }
+                return; // Prevent opening
+            }
+            
+            // Item exists, optional deletion
+            if (deleteItemAfterUse)
+            {
+                gManager.currentPlayerInventoryList.RemoveAt(itemIndex);
+                gManager.currentPlayerInventoryObjectVisibleList.RemoveAt(itemIndex);
+            }
+        }
+
         isOpened = !isOpened;
         if (movementCoroutine != null) StopCoroutine(movementCoroutine);
         movementCoroutine = StartCoroutine(AnimateRotation());
