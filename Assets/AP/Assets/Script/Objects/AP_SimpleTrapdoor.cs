@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AP_SimpleTrapdoor : MonoBehaviour
@@ -12,25 +11,11 @@ public class AP_SimpleTrapdoor : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
     public float volume = 1f;
-
-    [System.Serializable]
-    public class idList
-    {
-        public int ID = 0;          // entry ID in the window tab
-        public int uniqueID = 0;    // entry Unique ID
-    }
-
-    [Header("Inventory Requirement")]
-    public bool requireItemToOpen = false;
+    [Header("Item Requirement")]
+    public bool requiresItem = false;
     public int requiredItemID = 0;
-
-    [Header("Feedback when Locked")]
-    public bool b_feedbackActivated = false;
-    public List<idList> feedbackIDList = new List<idList>() { new idList() };
-    public AudioClip lockedSound;
-    public float lockedVolume = 1f;
-
-    private infoUI info;
+    public int feedbackID = 0;
+    public bool deleteItemAfterUse = false;
 
     private AudioSource audioSource;
     private Coroutine movementCoroutine;
@@ -55,9 +40,6 @@ public class AP_SimpleTrapdoor : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
 
-        GameObject tmpObj = GameObject.Find("UI_Infos");
-        if (tmpObj) info = tmpObj.GetComponent<infoUI>();
-
         InitializeBase();
 
         // Set initial state relative to baseRotation
@@ -66,42 +48,29 @@ public class AP_SimpleTrapdoor : MonoBehaviour
 
     public void MoveObject()
     {
-        if (!isOpened && requireItemToOpen)
+        if (requiresItem && !isOpened)
         {
-            bool hasItem = false;
-            if (ingameGlobalManager.instance != null && ingameGlobalManager.instance.currentPlayerInventoryList != null)
+            ingameGlobalManager gManager = ingameGlobalManager.instance;
+            int itemIndex = gManager.currentPlayerInventoryList.IndexOf(requiredItemID);
+
+            if (itemIndex == -1)
             {
-                if (ingameGlobalManager.instance.currentPlayerInventoryList.Contains(requiredItemID))
+                // Display feedback if item is missing
+                if (gManager.canvasPlayerInfos._infoUI)
                 {
-                    hasItem = true;
+                    gManager.canvasPlayerInfos._infoUI.playAnimInfo(
+                        gManager.currentFeedback.diaryList[gManager.currentLanguage]._languageSlot[feedbackID].diaryTitle[0], 
+                        "Feedback", 
+                        gameObject);
                 }
+                return; // Prevent opening
             }
-
-            if (!hasItem)
+            
+            // Item exists, optional deletion
+            if (deleteItemAfterUse)
             {
-                // Play locked sound
-                if (lockedSound != null && audioSource != null)
-                {
-                    audioSource.PlayOneShot(lockedSound, lockedVolume);
-                }
-
-                // Display feedback
-                if (info && b_feedbackActivated && feedbackIDList.Count > 0)
-                {
-                    bool b_Exist = false;
-                    for (var i = 0; i < info.listRefGameObject.Count; i++)
-                    {
-                        if (gameObject == info.listRefGameObject[i])
-                            b_Exist = true;
-                    }
-                    if (!b_Exist && ingameGlobalManager.instance != null && ingameGlobalManager.instance.currentFeedback != null)
-                    {
-                        string feedbackText = ingameGlobalManager.instance.currentFeedback.diaryList[ingameGlobalManager.instance.currentLanguage]._languageSlot[feedbackIDList[0].ID].diaryTitle[0];
-                        info.playAnimInfo(feedbackText, "Feedback", gameObject);
-                    }
-                }
-
-                return;
+                gManager.currentPlayerInventoryList.RemoveAt(itemIndex);
+                gManager.currentPlayerInventoryObjectVisibleList.RemoveAt(itemIndex);
             }
         }
 
