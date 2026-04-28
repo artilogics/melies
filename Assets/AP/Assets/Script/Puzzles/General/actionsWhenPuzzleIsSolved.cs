@@ -1,4 +1,4 @@
-﻿// Description : actionsWhenPuzzleIsSolved : use inpuzzle to do actions when the puzzle is solved
+// Description : actionsWhenPuzzleIsSolved : use inpuzzle to do actions when the puzzle is solved
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +28,8 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
         public objTranslateRotate   objTranslationOrRotation;
         public AnimationCurve       animCurve = new AnimationCurve();
         public Vector3              objScale = new Vector3(0,0,0);
+        public AudioClip            sfx;
+        public float                sfxVolume = 1f;
     }
 
     public List<ListOfEvent>        listOfEvent = new List<ListOfEvent>() { new ListOfEvent() };    // List of Event when the puzzle is solved
@@ -142,6 +144,12 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
                 callMethods.Call_A_Specific_Method(methodsList,i);
 
             } 
+
+            //-> Play SFX
+            if (listOfEvent[i].sfx != null && a_Source != null)
+            {
+                a_Source.PlayOneShot(listOfEvent[i].sfx, listOfEvent[i].sfxVolume);
+            }
 
             yield return new WaitForSeconds(listOfEvent[i].duration);
         }
