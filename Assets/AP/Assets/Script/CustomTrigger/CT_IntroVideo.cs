@@ -76,6 +76,11 @@ public class CT_IntroVideo : MonoBehaviour
 
         if (txtSkip) txtSkip.gameObject.SetActive(true);
 
+        // Silenciar todos los sonidos del juego excepto el audio del intro
+        if (introAudioSource != null)
+            introAudioSource.ignoreListenerVolume = true;
+        AudioListener.volume = 0f;
+
         if (videoPlayer != null && videoPlayer.clip != null)
             videoPlayer.Play();
 
@@ -110,6 +115,11 @@ public class CT_IntroVideo : MonoBehaviour
             introAudioSource.Stop();
         if (videoPlayer != null && videoPlayer.isPlaying)
             videoPlayer.Stop();
+
+        // Restaurar el volumen global
+        AudioListener.volume = 1f;
+        if (introAudioSource != null)
+            introAudioSource.ignoreListenerVolume = false;
 
         if (txtSkip) txtSkip.gameObject.SetActive(false);
 

@@ -18,20 +18,43 @@ public class audioMenu : MonoBehaviour {
 
 	private string[] arrAudio = new string[]{ "masterVol", "musicVol", "ambianceVol", "voiceVol", "fxVol" };
 
-	// Use this for initialization
+	// Se ejecuta al inicio de la escena aunque el GameObject esté inactivo.
+	// Aplica los volúmenes guardados al AudioMixer antes de que suene nada.
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+	static void ForceInitOnSceneLoad()
+	{
+		var menus = Resources.FindObjectsOfTypeAll<audioMenu>();
+		foreach (var menu in menus)
+		{
+			if (menu != null && menu.masterMixer != null)
+			{
+				menu.StartCoroutine(menu.ApplyVolumes());
+				return;
+			}
+		}
+	}
+
 	void Start () {
+        StartCoroutine(ApplyVolumes());
+	}
+
+    public IEnumerator ApplyVolumes() {
+        yield return null;
+
+        if (masterMixer == null) yield break;
 
         if (PlayerPrefs.HasKey("GameVolumes"))
         {
             loadVolumes();
-           
         }
         else {
-            setMasterVolume(0);
+            foreach (var param in arrAudio)
+                masterMixer.SetFloat(param, 0f);
         }
 
         updateAudioMenu();
-	}
+        saveVolumes();
+    }
 	
 
 	public void updateAudioMenu () {

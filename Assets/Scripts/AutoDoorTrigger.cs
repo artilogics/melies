@@ -6,10 +6,17 @@ public class DoorTriggerOpen : MonoBehaviour
     [Tooltip("Transform del pivot que rota la puerta (ej. Pivot1).")]
     public Transform doorPivot;
 
-    [Header("Configuración")]
-    [Tooltip("Ángulo en grados que girará la puerta (usar negativo para abrir al otro lado).")]
+    [Header("Sonido")]
+    [Tooltip("Clip de sonido que se reproducirï¿½ al abrir la puerta.")]
+    public AudioClip soundOpen;
+    [Tooltip("Volumen del sonido de apertura (0 = silencio, 1 = mï¿½ximo).")]
+    [Range(0f, 1f)]
+    public float soundVolume = 1f;
+
+    [Header("Configuraciï¿½n")]
+    [Tooltip("ï¿½ngulo en grados que girarï¿½ la puerta (usar negativo para abrir al otro lado).")]
     public float openAngle = 90f;
-    [Tooltip("Velocidad de apertura (más alto = más rápido).")]
+    [Tooltip("Velocidad de apertura (mï¿½s alto = mï¿½s rï¿½pido).")]
     public float openSpeed = 3f;
     [Tooltip("Etiqueta del objeto que activa la puerta.")]
     public string activatorTag = "Player";
@@ -27,10 +34,10 @@ public class DoorTriggerOpen : MonoBehaviour
             return;
         }
 
-        // Guardamos la rotación inicial (cerrada)
+        // Guardamos la rotaciï¿½n inicial (cerrada)
         closedRotation = doorPivot.localRotation;
 
-        // Calculamos hacia dónde abrirá la puerta
+        // Calculamos hacia dï¿½nde abrirï¿½ la puerta
         Vector3 euler = doorPivot.localEulerAngles;
         euler.y += openAngle;
         targetRotation = Quaternion.Euler(euler);
@@ -48,6 +55,10 @@ public class DoorTriggerOpen : MonoBehaviour
     private System.Collections.IEnumerator OpenDoor()
     {
         isOpening = true;
+
+        if (soundOpen != null)
+            AudioSource.PlayClipAtPoint(soundOpen, transform.position, soundVolume);
+
         while (Quaternion.Angle(doorPivot.localRotation, targetRotation) > 0.1f)
         {
             doorPivot.localRotation = Quaternion.Slerp(
