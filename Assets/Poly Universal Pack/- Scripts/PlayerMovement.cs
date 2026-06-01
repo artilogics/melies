@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Polyperfect.Universal
 {
@@ -9,6 +9,7 @@ namespace Polyperfect.Universal
         public float speed = 12f;
         public float gravity = -9.81f;
         public float jumpHeight = 3f;
+        public float slopeLimit = 60.0f;
 
         public Transform groundCheck;
         public float groundDistance = 0.4f;
@@ -26,7 +27,7 @@ namespace Polyperfect.Universal
 
             if (isGrounded && velocity.y < 0)
             {
-                controller.slopeLimit = 45.0f;
+                controller.slopeLimit = slopeLimit;
                 velocity.y = -2f;
             }
 
