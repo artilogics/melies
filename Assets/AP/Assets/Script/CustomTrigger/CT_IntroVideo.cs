@@ -45,6 +45,8 @@ public class CT_IntroVideo : MonoBehaviour
     [Header("Settings")]
     public float fadeOutDuration = 1f;
 
+    private Coroutine skipFadeInCoroutine;
+
     void Start()
     {
         if (canvasIntro) canvasIntro.SetActive(false);
@@ -74,7 +76,7 @@ public class CT_IntroVideo : MonoBehaviour
         if (ingameGlobalManager.instance.reticule && ingameGlobalManager.instance.b_DesktopInputs)
             ingameGlobalManager.instance.reticule.SetActive(false);
 
-        if (txtSkip) txtSkip.gameObject.SetActive(true);
+        if (txtSkip) skipFadeInCoroutine = StartCoroutine(FadeInSkipText(5f, 1f));
 
         // Silenciar todos los sonidos del juego excepto el audio del intro
         if (introAudioSource != null)
@@ -121,6 +123,11 @@ public class CT_IntroVideo : MonoBehaviour
         if (introAudioSource != null)
             introAudioSource.ignoreListenerVolume = false;
 
+        if (skipFadeInCoroutine != null)
+        {
+            StopCoroutine(skipFadeInCoroutine);
+            skipFadeInCoroutine = null;
+        }
         if (txtSkip) txtSkip.gameObject.SetActive(false);
 
         float t = 1f;
@@ -149,5 +156,42 @@ public class CT_IntroVideo : MonoBehaviour
 
         if (!ingameGlobalManager.instance.b_DesktopInputs && ingameGlobalManager.instance.canvasMobileInputs)
             ingameGlobalManager.instance.canvasMobileInputs.SetActive(true);
+    }
+
+    IEnumerator FadeInSkipText(float delay, float duration)
+    {
+        if (txtSkip == null) yield break;
+
+        // Ensure it's active but alpha is 0
+        txtSkip.gameObject.SetActive(true);
+        Color c = txtSkip.color;
+        c.a = 0f;
+        txtSkip.color = c;
+
+        // Wait for delay
+        float elapsed = 0f;
+        while (elapsed < delay)
+        {
+            if (ingameGlobalManager.instance == null || !ingameGlobalManager.instance.b_Ingame_Pause)
+            {
+                elapsed += Time.deltaTime;
+            }
+            yield return null;
+        }
+
+        // Fade in
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            if (ingameGlobalManager.instance == null || !ingameGlobalManager.instance.b_Ingame_Pause)
+            {
+                elapsed += Time.deltaTime;
+                c.a = Mathf.Clamp01(elapsed / duration);
+                txtSkip.color = c;
+            }
+            yield return null;
+        }
+        c.a = 1f;
+        txtSkip.color = c;
     }
 }

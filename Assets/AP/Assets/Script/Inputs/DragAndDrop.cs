@@ -1,4 +1,4 @@
-﻿// Description : DragAndDrop : Use in puzzle to drag and drop object (mobile, keyboard and desktop)
+// Description : DragAndDrop : Use in puzzle to drag and drop object (mobile, keyboard and desktop)
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -21,6 +21,9 @@ namespace AP_
         public bool puzzleObjectIsDetected = false;                 // Know if an object from the puzzle is detected
 
         public List<SpriteRenderer> listOfSelectedPuzzlePosition = new List<SpriteRenderer>();      // list of the PuzzleRefPosition. The position where an object could be drop
+
+        public float positionDefaultAlpha = 0.25f;
+        public float positionHoverAlpha = 0.8f;
 
 
         public Transform ReticuleJoystick;                                // Joystick fake Mouse              
@@ -100,7 +103,14 @@ namespace AP_
         public void F_DragAndDrop(List<SpriteRenderer> puzzleListOfSelectedPuzzlePosition)
         {
             if (listOfSelectedPuzzlePosition.Count == 0)                            // Once : Init listOfSelectedPuzzlePosition                                  
+            {
                 listOfSelectedPuzzlePosition = puzzleListOfSelectedPuzzlePosition;
+                foreach (SpriteRenderer rend in listOfSelectedPuzzlePosition)
+                {
+                    if (rend != null)
+                        rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, positionDefaultAlpha);
+                }
+            }
 
 
             if (ingameGlobalManager.instance.b_InputIsActivated)                    // Check if input is activated
@@ -362,9 +372,9 @@ namespace AP_
                         {
                             SpriteRenderer _currentHit = hit2.transform.gameObject.GetComponent<SpriteRenderer>();
 
-                            if (_currentHit.color.a == 0 && currentSelectedGameObject != null)
+                            if (_currentHit.color.a <= positionDefaultAlpha && currentSelectedGameObject != null)
                             {
-                                _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, 0.5f);
+                                _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, positionHoverAlpha);
                                 currentSelectedPuzzlePosition = hit2.transform.gameObject;
                             }
                             b_PuzzleRefPosition = true;
@@ -455,10 +465,10 @@ namespace AP_
                         {
                             SpriteRenderer _currentHit = hit2.transform.gameObject.GetComponent<SpriteRenderer>();
 
-                            if (_currentHit.color.a == 0/* && currentSelectedGameObject != null*/)
+                            if (_currentHit.color.a <= positionDefaultAlpha/* && currentSelectedGameObject != null*/)
                             {
                                 //Debug.Log("Ray");
-                                _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, 0.5f);
+                                _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, positionHoverAlpha);
                                 currentSelectedPuzzlePosition = hit2.transform.gameObject;
                             }
                             b_PuzzleRefPosition = true;
@@ -577,10 +587,10 @@ namespace AP_
 
                                     SpriteRenderer _currentHit = hit2.transform.gameObject.GetComponent<SpriteRenderer>();
 
-                                    if (_currentHit.color.a == 0 && currentSelectedGameObject != null)
+                                    if (_currentHit.color.a <= positionDefaultAlpha && currentSelectedGameObject != null)
                                     {
                                         //Debug.Log("Ray");
-                                        _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, 0.5f);
+                                        _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, positionHoverAlpha);
                                         currentSelectedPuzzlePosition = hit2.transform.gameObject;
                                     }
                                     b_PuzzleRefPosition = true;
@@ -620,7 +630,7 @@ namespace AP_
                 lastSelectedPuzzlePosition.GetComponent<SpriteRenderer>().color =
                     new Color(lastSelectedPuzzlePosition.GetComponent<SpriteRenderer>().color.r,
                               lastSelectedPuzzlePosition.GetComponent<SpriteRenderer>().color.g,
-                              lastSelectedPuzzlePosition.GetComponent<SpriteRenderer>().color.b, 0f);
+                              lastSelectedPuzzlePosition.GetComponent<SpriteRenderer>().color.b, positionDefaultAlpha);
             }
 
             foreach (SpriteRenderer rend in listOfSelectedPuzzlePosition)
@@ -628,7 +638,7 @@ namespace AP_
                 if (currentSelectedPuzzlePosition != null &&
                    rend.gameObject != currentSelectedPuzzlePosition)
                 {
-                    rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, 0f);
+                    rend.color = new Color(rend.color.r, rend.color.g, rend.color.b, positionDefaultAlpha);
                 }
             }
         }

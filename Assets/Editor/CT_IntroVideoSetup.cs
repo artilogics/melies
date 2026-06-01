@@ -162,8 +162,12 @@ public class CT_IntroVideoSetup : EditorWindow
         txt.text      = SKIP_TEXT[0];   // valor per defecte en editor; runtime l'actualitza TextProperties
         txt.color     = Color.white;
         txt.fontSize  = 28;
-        txt.alignment = TextAnchor.MiddleLeft;
-        txt.font      = GetDefaultFont();
+        txt.alignment = TextAnchor.MiddleCenter;
+        txt.font      = AssetDatabase.LoadAssetAtPath<Font>("Assets/Art/Tipografy/soria-font.ttf");
+        if (txt.font == null)
+            txt.font  = AssetDatabase.LoadAssetAtPath<Font>("Assets/TextMesh Pro/Fonts/soria-font.ttf");
+        if (txt.font == null)
+            txt.font  = GetDefaultFont();
 
         // Shadow per llegibilitat
         Shadow shadow = txtObj.AddComponent<Shadow>();
@@ -177,11 +181,11 @@ public class CT_IntroVideoSetup : EditorWindow
         textProp.language_AutoUpdate = true;
 
         RectTransform txtRect = txt.rectTransform;
-        txtRect.anchorMin        = Vector2.zero;
-        txtRect.anchorMax        = Vector2.zero;
-        txtRect.pivot            = Vector2.zero;
-        txtRect.sizeDelta        = new Vector2(560, 50);
-        txtRect.anchoredPosition = new Vector2(30, 30);
+        txtRect.anchorMin        = new Vector2(0.5f, 0f);
+        txtRect.anchorMax        = new Vector2(0.5f, 0f);
+        txtRect.pivot            = new Vector2(0.5f, 0f);
+        txtRect.sizeDelta        = new Vector2(800, 60);
+        txtRect.anchoredPosition = new Vector2(0, 50);
         Log($"✓ TxtSkip creat amb TextProperties (wUI ID {skipTextID})");
 
         // ── 7. Manager GameObject ─────────────────────────────────────────────
