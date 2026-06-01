@@ -1,4 +1,4 @@
-﻿// Description : Custom Editor for actionsWhenPuzzleIsSolved.cs
+// Description : Custom Editor for actionsWhenPuzzleIsSolved.cs
 #if (UNITY_EDITOR)
 using UnityEngine;
 using System.Collections;
@@ -20,6 +20,8 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
     SerializedProperty          a_puzzleSolvedVolume;
 
     SerializedProperty          objectActivatedWhenPuzzleIsSolved;
+    SerializedProperty          b_playCinematic;
+    SerializedProperty          cinematicVideo;
 
 
     public EditorMethods        editorMethods;                                         // access the component EditorMethods
@@ -56,6 +58,8 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
         a_puzzleSolvedVolume = serializedObject.FindProperty("a_puzzleSolvedVolume");
 
         objectActivatedWhenPuzzleIsSolved = serializedObject.FindProperty("objectActivatedWhenPuzzleIsSolved");
+        b_playCinematic = serializedObject.FindProperty("b_playCinematic");
+        cinematicVideo = serializedObject.FindProperty("cinematicVideo");
 
 
         if (EditorPrefs.GetBool("AP_ProSkin") == true)
@@ -128,6 +132,24 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
 
             EditorGUILayout.LabelField("");
 
+            EditorGUILayout.BeginVertical(style_Yellow_01);
+            EditorGUILayout.LabelField("Cinematic Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Play Cinematic on Solve: ", GUILayout.Width(180));
+            EditorGUILayout.PropertyField(b_playCinematic, new GUIContent(""), GUILayout.Width(30));
+            EditorGUILayout.EndHorizontal();
+
+            if (b_playCinematic.boolValue)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("Cinematic Video Clip: ", GUILayout.Width(180));
+                EditorGUILayout.PropertyField(cinematicVideo, new GUIContent(""), GUILayout.Width(150));
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.LabelField("");
+
             for (var i = 0; i < listOfEvent.arraySize; i++)
             {
                 EditorGUILayout.BeginVertical(style_Blue);
@@ -162,7 +184,18 @@ public class actionsWhenPuzzleIsSolvedEditor : Editor {
                 //EditorGUILayout.LabelField("", GUILayout.Width(15));
                 EditorGUILayout.LabelField("Step duration : ", GUILayout.Width(90));
                 EditorGUILayout.PropertyField(listOfEvent.GetArrayElementAtIndex(i).FindPropertyRelative("duration"), new GUIContent(""), GUILayout.Width(20));
+                EditorGUILayout.EndHorizontal();
 
+                //-> Play SFX
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Play Audio : ", GUILayout.Width(160));
+                EditorGUILayout.PropertyField(listOfEvent.GetArrayElementAtIndex(i).FindPropertyRelative("sfx"), new GUIContent(""), GUILayout.Width(100));
+                if (listOfEvent.GetArrayElementAtIndex(i).FindPropertyRelative("sfx").objectReferenceValue != null)
+                {
+                    EditorGUILayout.LabelField(" Vol: ", GUILayout.Width(30));
+                    SerializedProperty sfxVol = listOfEvent.GetArrayElementAtIndex(i).FindPropertyRelative("sfxVolume");
+                    sfxVol.floatValue = EditorGUILayout.Slider(sfxVol.floatValue, 0, 1);
+                }
                 EditorGUILayout.EndHorizontal();
 
                 //-> Use a feedback Camera

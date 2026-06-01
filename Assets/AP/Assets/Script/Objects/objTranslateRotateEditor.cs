@@ -439,15 +439,13 @@ public class objTranslateRotateEditor : Editor {
 			EditorGUILayout.EndHorizontal ();
 
 	//-> Select Axis
-			if (movementType.intValue == 1){
-				EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("Select Axis : ", GUILayout.Width (120));
-					movementAxis.intValue = EditorGUILayout.Popup (movementAxis.intValue, optionsAxis);
-				EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("Select Axis : ", GUILayout.Width (120));
+				movementAxis.intValue = EditorGUILayout.Popup (movementAxis.intValue, optionsAxis);
+			EditorGUILayout.EndHorizontal ();
 
-				if (EditorGUI.EndChangeCheck ()) {
-					updateConstraints ();
-				}
+			if (EditorGUI.EndChangeCheck ()) {
+				updateConstraints ();
 			}
 			EditorGUILayout.LabelField ("");
 
@@ -793,9 +791,18 @@ public class objTranslateRotateEditor : Editor {
 
 				constraintsAxisRotation.GetArrayElementAtIndex (0).boolValue = true;
 				constraintsAxisRotation.GetArrayElementAtIndex (1).boolValue = true;
-				constraintsAxisRotation.GetArrayElementAtIndex (2).boolValue = true;
 			}
 		}
+
+        // Sync HingeJoint axis in Editor
+        objTranslateRotate myScript = (objTranslateRotate)target;
+        if (myScript.objPivot != null && myScript.objPivot.GetComponent<HingeJoint>())
+        {
+            HingeJoint hinge = myScript.objPivot.GetComponent<HingeJoint>();
+            if (movementAxis.intValue == 0) hinge.axis = new Vector3(1, 0, 0);
+            if (movementAxis.intValue == 1) hinge.axis = new Vector3(0, 1, 0);
+            if (movementAxis.intValue == 2) hinge.axis = new Vector3(0, 0, 1);
+        }
 	}
 
 //--> init object position when the movement is ended

@@ -58,6 +58,7 @@ public class characterMovementEditor : Editor {
     SerializedProperty KeyboardJump;
     SerializedProperty b_AllowJump;
     SerializedProperty jumpForce;
+    SerializedProperty jumpSpeed;
     SerializedProperty GravityFallSpeed;
 
     SerializedProperty hitDistanceMin;
@@ -150,6 +151,7 @@ public class characterMovementEditor : Editor {
         KeyboardJump = serializedObject.FindProperty("KeyboardJump");
         b_AllowJump = serializedObject.FindProperty("b_AllowJump");
         jumpForce = serializedObject.FindProperty("jumpForce");
+        jumpSpeed = serializedObject.FindProperty("jumpSpeed");
         GravityFallSpeed = serializedObject.FindProperty("GravityFallSpeed");
 
         hitDistanceMin = serializedObject.FindProperty("hitDistanceMin");
@@ -279,6 +281,33 @@ public class characterMovementEditor : Editor {
         EditorGUILayout.EndVertical();
 
 
+        EditorGUILayout.BeginVertical(style_Orange);
+        EditorGUILayout.HelpBox("Jump Options", MessageType.Info);
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Allow Jump:", GUILayout.Width(160));
+        EditorGUILayout.PropertyField(b_AllowJump, new GUIContent(""), GUILayout.Width(20));
+        EditorGUILayout.EndHorizontal();
+
+        if (b_AllowJump.boolValue)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Jump Height/Force:", GUILayout.Width(160));
+            EditorGUILayout.PropertyField(jumpForce, new GUIContent(""), GUILayout.Width(40));
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Jump Speed:", GUILayout.Width(160));
+            EditorGUILayout.PropertyField(jumpSpeed, new GUIContent(""), GUILayout.Width(40));
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Fall Speed:", GUILayout.Width(160));
+            EditorGUILayout.PropertyField(GravityFallSpeed, new GUIContent(""), GUILayout.Width(40));
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndVertical();
+
+
    
         EditorGUILayout.BeginVertical(style_Orange);
         EditorGUILayout.HelpBox("Character Climbing Max Angle", MessageType.Info);
@@ -395,6 +424,7 @@ public class characterMovementEditor : Editor {
                
             EditorGUILayout.EndHorizontal();
 
+            /*
              //-> Jump
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Jump: ", GUILayout.Width(160));
@@ -418,6 +448,19 @@ public class characterMovementEditor : Editor {
                 EditorGUILayout.LabelField("Fall Speed:", GUILayout.Width(70));
                 EditorGUILayout.PropertyField(GravityFallSpeed, new GUIContent(""), GUILayout.Width(30));
 
+            }
+            EditorGUILayout.EndHorizontal();
+            */
+            //-> Jump
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Jump Key: ", GUILayout.Width(160));
+            if (b_AllowJump.boolValue)
+            {
+                KeyboardJump.intValue = EditorGUILayout.Popup(KeyboardJump.intValue, s_inputListKeyboardButton.ToArray());
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Jump is disabled in 'Jump Options'");
             }
             EditorGUILayout.EndHorizontal();
 
@@ -498,6 +541,7 @@ public class characterMovementEditor : Editor {
 
             EditorGUILayout.EndHorizontal();
 
+            /*
              //-> Jump
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Jump: ", GUILayout.Width(160));
@@ -521,6 +565,19 @@ public class characterMovementEditor : Editor {
                 EditorGUILayout.LabelField("Fall Speed:", GUILayout.Width(70));
                 EditorGUILayout.PropertyField(GravityFallSpeed, new GUIContent(""), GUILayout.Width(30));
 
+            }
+            EditorGUILayout.EndHorizontal();
+            */
+            //-> Jump
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Jump Button: ", GUILayout.Width(160));
+            if (b_AllowJump.boolValue)
+            {
+                JoystickJump.intValue = EditorGUILayout.Popup(JoystickJump.intValue, s_inputListJoystickButton.ToArray());
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Jump is disabled in 'Jump Options'");
             }
             EditorGUILayout.EndHorizontal();
 

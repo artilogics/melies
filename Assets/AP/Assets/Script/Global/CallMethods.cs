@@ -106,17 +106,19 @@ public class CallMethods {
         bool result = true;
         //for (var i = 0; i < methodsList.Count; i++)
         //{
-        if (methodsList[value].obj != null)
+        if (methodsList[value].obj != null && methodsList[value].scriptRef != null)
             {
-            Type info = methodsList[value].scriptRef.GetType().GetMethod(methodsList[value].methodInfoName).ReturnType;
+                var methodInfo = methodsList [value].scriptRef.GetType ().GetMethod (methodsList [value].methodInfoName);
+                if (methodInfo != null) {
+                    Type info = methodInfo.ReturnType;
 
-                if (info == typeof(System.Boolean))
-                {
-                result = (bool)methodsList[value].scriptRef.GetType().GetMethod(methodsList[value].methodInfoName).Invoke(
-                    methodsList[value].obj.GetComponent(methodsList[value].scriptRef.GetType()), new object[] { });
-                }
-                else{
-                    Debug.Log(methodsList[value].methodInfoName + " is not a boolean Method");
+                    if (info == typeof(System.Boolean)) {
+                        result = (bool)methodInfo.Invoke (
+                            methodsList [value].obj.GetComponent (methodsList [value].scriptRef.GetType ()), new object[] { });
+                    }
+                    else {
+                        Debug.Log (methodsList [value].methodInfoName + " is not a boolean Method");
+                    }
                 }
             }
             //if (result == false) break;
@@ -128,13 +130,16 @@ public class CallMethods {
 	public bool Call_A_Method_Only_Boolean (List<EditorMethodsList.MethodsList> methodsList){
 		bool result = true;
 		for (var i = 0; i < methodsList.Count; i++) {
-			if (methodsList [i].obj != null) {
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName).ReturnType;
+			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
+                var methodInfo = methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName);
+                if (methodInfo != null) {
+                    Type info = methodInfo.ReturnType;
 
-				if(info == typeof(System.Boolean)){
-					result = (bool)methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName).Invoke (
-						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ });	
-				}
+                    if (info == typeof(System.Boolean)) {
+                        result = (bool)methodInfo.Invoke (
+                            methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[] { });
+                    }
+                }
 			}
             if (result == false) break;
 		}
@@ -146,12 +151,15 @@ public class CallMethods {
 		string result = defaultResult;
 		for (var i = 0; i < methodsList.Count; i++) {
 			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName).ReturnType;
+                var methodInfo = methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName);
+                if (methodInfo != null) {
+                    Type info = methodInfo.ReturnType;
 
-				if(info == typeof(System.String)){
-					result = (string)methodsList [i].scriptRef.GetType ().GetMethod (methodsList [i].methodInfoName).Invoke (
-						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ });	
-				}
+                    if (info == typeof(System.String)) {
+                        result = (string)methodInfo.Invoke (
+                            methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[] { });
+                    }
+                }
 			}
 		}
 		return result;
@@ -163,12 +171,15 @@ public class CallMethods {
 		for (var i = 0; i < methodsList.Count; i++) {
 			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
 				//Debug.Log(methodsList [i].obj.name);
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData").ReturnType;
+                var methodInfo = methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData");
+                if (methodInfo != null) {
+                    Type info = methodInfo.ReturnType;
 
-				if(info == typeof(System.String)){
-					result = (string)methodsList [i].scriptRef.GetType ().GetMethod ("ReturnSaveData").Invoke (
-						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ });	
-				}
+                    if (info == typeof(System.String)) {
+                        result = (string)methodInfo.Invoke (
+                            methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[] { });
+                    }
+                }
 			}
 		}
 		return result;
@@ -178,13 +189,14 @@ public class CallMethods {
 	public void Call_A_Method_ObjectLoadData (List<EditorMethodsList.MethodsList> methodsList,string s_Value){
 		for (var i = 0; i < methodsList.Count; i++) {
 
-			if (methodsList [i].obj != null) {
+			if (methodsList [i].obj != null && methodsList [i].scriptRef != null) {
+                var methodInfo = methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject");
 
-				Type info = methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject").ReturnType;
-																								
-				methodsList [i].scriptRef.GetType ().GetMethod ("saveSystemInitGameObject").Invoke (
-						methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[]{ s_Value });	// call method with an string argument
-                
+                if (methodInfo != null) {
+                    //Type info = methodInfo.ReturnType;
+                    methodInfo.Invoke (
+                            methodsList [i].obj.GetComponent (methodsList [i].scriptRef.GetType ()), new object[] { s_Value });  // call method with an string argument
+                }
 			} 
 		}
 	}

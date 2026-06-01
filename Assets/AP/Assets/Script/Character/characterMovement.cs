@@ -1122,19 +1122,9 @@ public class characterMovement : MonoBehaviour {
         b_IsJumping = true;
         while (t != jumpForce)
         {
-            if (!Input.GetKey(ingameGlobalManager.instance.inputListOfStringGamepadButton[JoystickJump]) &&
-                        ingameGlobalManager.instance.b_DesktopInputs &&
-                        ingameGlobalManager.instance.b_Joystick && t > jumpForce * minimumJump
-
-                    ||
-
-                        !Input.GetKey(ingameGlobalManager.instance.inputListOfStringKeyboardButton[KeyboardJump]) &&
-                        ingameGlobalManager.instance.b_DesktopInputs &&
-                        !ingameGlobalManager.instance.b_Joystick && t > jumpForce * minimumJump
-
-                || AP_CheckIfPlayerIsTouchingRoof())
+            if (AP_CheckIfPlayerIsTouchingRoof())
             {
-                //Stop Jump
+                //Stop Jump if touching roof
                 t = jumpForce;
             }
             else

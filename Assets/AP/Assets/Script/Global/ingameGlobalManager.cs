@@ -209,7 +209,7 @@ public class ingameGlobalManager : MonoBehaviour {
 	{
         if (!Application.isEditor)
         {
-            if (b_Ingame_Pause)
+            if (hasFocus)
                 onlyUnPauseGame();
             else
                 onlyPauseGame();

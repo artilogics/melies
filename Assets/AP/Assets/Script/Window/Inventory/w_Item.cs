@@ -870,7 +870,7 @@ public class w_Item : EditorWindow
 											//PrefabUtility.ReplacePrefab (Selection.activeGameObject, prefab, ReplacePrefabOptions.ConnectToPrefab);
 											PrefabUtility.SaveAsPrefabAsset(Selection.activeGameObject, localPath);
 
-											string objectPath = "Assets/AP/Assets/Inventory/" + Selection.activeGameObject.name + ".prefab";
+											string objectPath = "Assets/Develope-El Somni de Méliès/Inventory/" + Selection.activeGameObject.name + ".prefab";
 											GameObject _prefab = AssetDatabase.LoadAssetAtPath(objectPath, typeof(GameObject)) as GameObject;
 											if (_prefab)
 											{
